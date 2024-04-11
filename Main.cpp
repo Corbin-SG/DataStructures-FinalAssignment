@@ -49,7 +49,8 @@ typedef struct Queue {
 bool isPasswordValid(char* pass);
 char* removeNewLine(char* userInput);
 char* collectUserInput(void);
-void createAccount(void);
+void createAccount(Stack* stack);
+bool correctPass(Account account, char* pass);
 
 int main(void) {
 
@@ -126,6 +127,16 @@ bool isPasswordValid(char* pass)
 	}
 }
 
+bool correctPass(Account account, char* pass) 
+{
+	if (strcmp(account.password, pass) == 0) {
+		return true;
+	}
+	else {
+		return false;
+	}
+}
+
 char* removeNewLine(char* userInput)
 {
 	size_t stringLength = strlen(userInput);
@@ -155,10 +166,7 @@ void createAccount(Stack* stack)
 	while (exit == 0) {
 		printf("Enter a Username: ");
 		strcpy(userName, collectUserInput());
-		//if (searchByUserName(userName) !=NULL){
-		//	printf("Username in Use: Try again\n");
-		//	continue;
-		//}
+		//Search linked list for existing account w username
 		printf("Password must be at least 6 characters in length and contain: Number, Symbol (!@#$%&*_+=-,.?\n");
 		printf("Enter a Password: ");
 		strcpy(pass, collectUserInput());
@@ -170,6 +178,30 @@ void createAccount(Stack* stack)
 		strcpy(profileURL, collectUserInput());
 		exit = EXIT;
 	}
-	//addNode(userName, pass, profileURL);
-	//push(stack, CREATE_ACCOUNT,userName, pass, profileURL);
+	//Add node to linked list
+	//Push action to stack
+}
+
+void deleteAccount(void) {
+
+	char userName[MAX_ARRAY_SIZE] = "";
+	char pass[MAX_ARRAY_SIZE] = "";
+	int exit = 0;
+	Account* account = NULL;
+
+	while (exit == 0) {
+		printf("Enter the Username of the Account to be Deleted: ");
+		strcpy(userName, collectUserInput());
+		//Search linked list for account if found, inform user and "continue;"
+		printf("Enter Account's Password: ");
+		strcpy(pass, collectUserInput());
+		if (correctPass(*account, pass) == false) {
+			printf("Incorrect Password.\n");
+			continue;
+		}
+		exit = EXIT;
+	}
+
+	//Delete Node
+	//Push action to stack
 }
