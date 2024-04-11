@@ -54,6 +54,7 @@ void createAccount(Stack* stack, Account* head);
 void deleteAccount(Stack* stack, Account* head);
 void changeUserName(Account* head, Stack* stack);
 void changePassword(Account* head, Stack* stack);
+void changeProfilePicture(Account* head, Stack* stack);
 
 int main(void) {
 
@@ -110,6 +111,10 @@ int main(void) {
 
 		case CHANGE_PASSWORD:
 			changePassword(head, stack);
+			break;
+
+		case CHANGE_PROFILE:
+			changeProfilePicture(head, stack);
 			break;
 		}
 	}
@@ -272,5 +277,31 @@ void changePassword(Account* head, Stack* stack)
 	printf("Enter new Password: ");
 	strcpy(pass, collectUserInput());
 	head->password = pass;
+	//Add action to stack
+}
+
+void changeProfilePicture(Account* head, Stack* stack)
+{
+	char userName[MAX_ARRAY_SIZE] = "";
+	char pass[MAX_ARRAY_SIZE] = "";
+	char profilePicture[MAX_ARRAY_SIZE] = "";
+	int exit = 0;
+
+	while (exit == 0) {
+		printf("Enter Username of Account to be Edited: ");
+		strcpy(userName, collectUserInput());
+		//Search linked list for account, if not found, inform user and "continue;"
+		printf("Enter Account's Current Password: ");
+		strcpy(pass, collectUserInput());
+		if (correctPass(*head, pass) == false) {
+			printf("Incorrect Password.\n");
+			continue;
+		}
+		exit = EXIT;
+	}
+
+	printf("Enter new Profile Picture URL: ");
+	strcpy(pass, collectUserInput());
+	head->profilePicURL = profilePicture;
 	//Add action to stack
 }
