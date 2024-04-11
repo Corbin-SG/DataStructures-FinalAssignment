@@ -64,6 +64,7 @@ void changePassword(Account* head, Stack* stack);
 void changeProfilePicture(Account* head, Stack* stack);
 void viewAccounts(Account* head);
 void viewHistory(Account* head, Stack* stack, Queue* queue);
+void deleteHistory(Stack* stack);
 
 int main(void) {
 
@@ -95,7 +96,7 @@ int main(void) {
 		printf("5.\t Change an Account's Profile Picture\n");
 		printf("6.\t See Accounts\n");
 		printf("7.\t See History\n");
-		printf("8.\t Delete History\n");
+		printf("8.\t Delete History (NOTE: Action cannot be undone. All previous actions will be unrecoverable.)\n");
 		printf("9.\t Exit Program\n");
 
 		strcpy(userInput, collectUserInput());
@@ -132,6 +133,14 @@ int main(void) {
 
 		case SEE_HISTORY:
 			viewHistory(head, stack, queue);
+			break;
+
+		case DELETE_HISTORY:
+			deleteHistory(stack);
+			break;
+
+		case EXIT:
+			exitLoop = EXIT;
 			break;
 		}
 	}
@@ -439,5 +448,12 @@ void viewHistory(Account* head, Stack* stack, Queue* queue)
 			//Dequeue & Push to stack until queue is empty
 			exit = EXIT;
 		}
+	}
+}
+
+void deleteHistory(Stack* stack)
+{
+	while (stack != NULL) {
+		//Pop stack
 	}
 }
