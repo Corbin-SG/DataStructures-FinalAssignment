@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <string.h>
 
 #define CREATE_ACCOUNT	1
 #define DELETE_ACCOUNT	2
@@ -38,6 +39,37 @@ typedef struct Queue {
 	struct QueueNode* back;
 }Queue;
 
+bool isPasswordValid(char* pass);
+
 int main(void) {
 
+	isPasswordValid((char*)"0!Aa");
+	isPasswordValid((char*)"@Bb");
+	isPasswordValid((char*)"3Hd");
+	isPasswordValid((char*)"6$h");
+	isPasswordValid((char*)"7*J");
+
+}
+
+bool isPasswordValid(char* pass) {
+	char nums[11] = "0123456789";
+	char symbols[15] = "!@#$%&*_+=-,.?";
+	char upper[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+	char lower[27] = "abcdefghijklmnopqrstuvwxyz";
+
+	if (strpbrk(pass, nums) == NULL) {
+		return false;
+	}
+	else if (strpbrk(pass, symbols) == NULL) {
+		return false;
+	}
+	else if (strpbrk(pass, upper) == NULL) {
+		return false;
+	}
+	else if (strpbrk(pass, lower) == NULL) {
+		return false;
+	}
+	else {
+		return true;
+	}
 }
