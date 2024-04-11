@@ -6,6 +6,7 @@
 #define CHANGE_USER		3
 #define CHANGE_PASSWORD	4
 #define CHANGE_PROFILE	5
+#define MIN_PASS_LENGTH	6
 
 typedef struct Account {
 	char* username;
@@ -43,12 +44,7 @@ bool isPasswordValid(char* pass);
 
 int main(void) {
 
-	isPasswordValid((char*)"0!Aa");
-	isPasswordValid((char*)"@Bb");
-	isPasswordValid((char*)"3Hd");
-	isPasswordValid((char*)"6$h");
-	isPasswordValid((char*)"7*J");
-
+	return 0;
 }
 
 bool isPasswordValid(char* pass) {
@@ -57,7 +53,10 @@ bool isPasswordValid(char* pass) {
 	char upper[27] = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
 	char lower[27] = "abcdefghijklmnopqrstuvwxyz";
 
-	if (strpbrk(pass, nums) == NULL) {
+	if (strlen(pass) < MIN_PASS_LENGTH) {
+		return false;
+	}
+	else if (strpbrk(pass, nums) == NULL) {
 		return false;
 	}
 	else if (strpbrk(pass, symbols) == NULL) {
