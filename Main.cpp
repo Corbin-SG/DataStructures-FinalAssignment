@@ -55,6 +55,7 @@ void deleteAccount(Stack* stack, Account* head);
 void changeUserName(Account* head, Stack* stack);
 void changePassword(Account* head, Stack* stack);
 void changeProfilePicture(Account* head, Stack* stack);
+void viewAccounts(Account* head);
 
 int main(void) {
 
@@ -116,6 +117,8 @@ int main(void) {
 		case CHANGE_PROFILE:
 			changeProfilePicture(head, stack);
 			break;
+		case SEE_ACCOUNTS:
+			viewAccounts(head);
 		}
 	}
 
@@ -304,4 +307,18 @@ void changeProfilePicture(Account* head, Stack* stack)
 	strcpy(pass, collectUserInput());
 	head->profilePicURL = profilePicture;
 	//Add action to stack
+}
+
+void viewAccounts(Account* head) 
+{
+	struct Account* current = head;
+	while (current != NULL) {
+		printf("===ACCOUNT===\n");
+		printf("Username: %s\n", current->username);
+		printf("Password: %s\n", current->password);
+		printf("PFP:      %s\n", current->profilePicURL);
+		printf("=============\n");
+
+		current = current->next;
+	}
 }
