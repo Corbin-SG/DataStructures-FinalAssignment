@@ -47,10 +47,12 @@ typedef struct Queue {
 }Queue;
 
 bool isPasswordValid(char* pass);
+bool correctPass(Account account, char* pass);
 char* removeNewLine(char* userInput);
 char* collectUserInput(void);
-void createAccount(Stack* stack);
-bool correctPass(Account account, char* pass);
+void createAccount(Stack* stack, Account* head);
+void deleteAccount(Stack* stack, Account* head);
+void changeUserName(Account* head, Stack* stack);
 
 int main(void) {
 
@@ -70,6 +72,8 @@ int main(void) {
 	}
 	queue->front = NULL;
 	queue->back = NULL;
+	
+	struct Account* head = NULL;
 
 	while (exitLoop != EXIT) {
 		printf(" ===YOUR ACCOUNT MANAGER=== \n");
@@ -92,8 +96,15 @@ int main(void) {
 
 		switch (userNum) {
 		case CREATE_ACCOUNT:
-			createAccount(stack);
+			createAccount(stack, head);
 			break;
+			
+		case DELETE_ACCOUNT:
+			deleteAccount(stack, head);
+			break;
+
+		case CHANGE_USER:
+			changeUserName(head, stack);
 		}
 	}
 
@@ -156,7 +167,7 @@ char* collectUserInput(void)
 	return userInput;
 }
 
-void createAccount(Stack* stack) 
+void createAccount(Stack* stack, Account* head) 
 {
 	int exit = 0;
 	char userName[MAX_ARRAY_SIZE] = "";
@@ -182,20 +193,21 @@ void createAccount(Stack* stack)
 	//Push action to stack
 }
 
-void deleteAccount(void) {
+void deleteAccount(Stack* stack, Account* head) 
+{
 
 	char userName[MAX_ARRAY_SIZE] = "";
 	char pass[MAX_ARRAY_SIZE] = "";
 	int exit = 0;
-	Account* account = NULL;
 
+	//Check if linked list is empty
 	while (exit == 0) {
 		printf("Enter the Username of the Account to be Deleted: ");
 		strcpy(userName, collectUserInput());
-		//Search linked list for account if found, inform user and "continue;"
+		//Search linked list for account if not found, inform user and "continue;"
 		printf("Enter Account's Password: ");
 		strcpy(pass, collectUserInput());
-		if (correctPass(*account, pass) == false) {
+		if (correctPass(*head, pass) == false) {
 			printf("Incorrect Password.\n");
 			continue;
 		}
@@ -204,4 +216,30 @@ void deleteAccount(void) {
 
 	//Delete Node
 	//Push action to stack
+}
+
+void changeUserName(Account* head, Stack* stack) 
+{
+
+	char userName[MAX_ARRAY_SIZE] = "";
+	char pass[MAX_ARRAY_SIZE] = "";
+	int exit = 0;
+
+	while (exit == 0) {
+		printf("Enter Username of Account to be Edited: ");
+		strcpy(userName, collectUserInput());
+		//Search linked list for account, if not found, inform user and "continue;"
+		printf("Enter Account's Password: ");
+		strcpy(pass, collectUserInput());
+		if (correctPass(*head, pass) == false) {
+			printf("Incorrect Password.\n");
+			continue;
+		}
+		exit = EXIT;
+	}
+
+	printf("Enter new Username: ");
+	strcpy(userName, collectUserInput());
+	head->username = userName;
+	//Add action to stack
 }
