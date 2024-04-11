@@ -3,10 +3,15 @@
 #include <stdlib.h>
 
 #define CREATE_ACCOUNT	1
+#define MOVE_BACK		1
 #define DELETE_ACCOUNT	2
+#define MOVE_FORWARD	2
 #define CHANGE_USER		3
+#define UNDO			3
 #define CHANGE_PASSWORD	4
+#define DELETE_FROM_HIS	4
 #define CHANGE_PROFILE	5
+#define TO_MENU			5
 #define MIN_PASS_LENGTH	6
 #define SEE_ACCOUNTS	6
 #define SEE_HISTORY		7
@@ -26,6 +31,7 @@ typedef struct StackNode {
 	char* username;
 	char* password;
 	char* profilePicUrl;
+	char* heldValue;
 	struct Stack* next;
 }StackNode;
 
@@ -35,9 +41,10 @@ typedef struct Stack {
 
 typedef struct QueueNode {
 	int action;
-	char* heldUser;
-	char* heldPass;
-	char* heldURL;
+	char* username;
+	char* password;
+	char* profilePicURl;
+	char* heldValue;
 	struct Node* next;
 }QueueNode;
 
@@ -56,6 +63,7 @@ void changeUserName(Account* head, Stack* stack);
 void changePassword(Account* head, Stack* stack);
 void changeProfilePicture(Account* head, Stack* stack);
 void viewAccounts(Account* head);
+void viewHistory(Account* head, Stack* stack, Queue* queue);
 
 int main(void) {
 
@@ -117,8 +125,14 @@ int main(void) {
 		case CHANGE_PROFILE:
 			changeProfilePicture(head, stack);
 			break;
+
 		case SEE_ACCOUNTS:
 			viewAccounts(head);
+			break;
+
+		case SEE_HISTORY:
+			viewHistory(head, stack, queue);
+			break;
 		}
 	}
 
@@ -254,8 +268,8 @@ void changeUserName(Account* head, Stack* stack)
 
 	printf("Enter new Username: ");
 	strcpy(userName, collectUserInput());
-	head->username = userName;
 	//Add action to stack
+	head->username = userName;
 }
 
 void changePassword(Account* head, Stack* stack) 
@@ -279,8 +293,8 @@ void changePassword(Account* head, Stack* stack)
 
 	printf("Enter new Password: ");
 	strcpy(pass, collectUserInput());
-	head->password = pass;
 	//Add action to stack
+	head->password = pass;
 }
 
 void changeProfilePicture(Account* head, Stack* stack)
@@ -305,8 +319,8 @@ void changeProfilePicture(Account* head, Stack* stack)
 
 	printf("Enter new Profile Picture URL: ");
 	strcpy(pass, collectUserInput());
-	head->profilePicURL = profilePicture;
 	//Add action to stack
+	head->profilePicURL = profilePicture;
 }
 
 void viewAccounts(Account* head) 
@@ -320,5 +334,110 @@ void viewAccounts(Account* head)
 		printf("=============\n");
 
 		current = current->next;
+	}
+}
+
+void viewHistory(Account* head, Stack* stack, Queue* queue)
+{
+	int exit = 0;
+	int userNum = 0;
+	char userInput[MAX_ARRAY_SIZE] = "";
+	struct StackNode* action = stack->top;
+
+	//Peek into stack & set action to top
+
+	while (exit == 0) {
+		printf("====HISTORY====\n");
+
+		switch (action->action) {
+		case DELETE_ACCOUNT:
+			printf("Account Deleted... Details:\n");
+			printf("Username: %s\n", action->username);
+			printf("Password: %s\n", action->password);
+			printf("PFP:      %s\n", action->profilePicUrl);
+			break;
+		case CREATE_ACCOUNT:
+			printf("Account Created... Details:\n");
+			printf("Username: %s\n", action->username);
+			printf("Password: %s\n", action->password);
+			printf("PFP:      %s\n", action->profilePicUrl);
+			break;
+		case CHANGE_USER:
+			printf("Username Changed... Details:\n");
+			printf("Current Username: %s\n", action->username);
+			printf("Old Username:     %s\n", action->heldValue);
+			break;
+		case CHANGE_PASSWORD:
+			printf("Password Changed... Details:\n");
+			printf("Edited Account:   %s\n", action->username);
+			printf("Current Password: %s\n", action->password);
+			printf("Old Password:     %s\n", action->heldValue);
+			break;
+		case CHANGE_PROFILE:
+			printf("Profile Picture Changed... Details:\n");
+			printf("Edited Account: %s\n", action->username);
+			printf("Current PFP:    %s\n", action->profilePicUrl);
+			printf("Old PFP:        %s\n", action->heldValue);
+			break;
+		}
+
+		printf("===============\n");
+		printf("1. Move back\n");
+		printf("2. Move forward\n");
+		printf("3. Undo\n");
+		printf("4. Delete from History. (NOTE: Will be unable to undo this action)\n");
+		printf("5. Exit to menu\n");
+
+		strcpy(userInput, collectUserInput());
+		userNum = atoi(userInput);
+		if (userNum < 1 || userNum > 4) {
+			printf("Invalid input\n");
+			continue;
+		}
+
+		switch (userNum) {
+		case MOVE_FORWARD:
+			//Enqueue action
+			//Pop stack
+			break;
+
+		case MOVE_BACK:
+			//Push action
+			//Dequeue queue
+			break;
+		case UNDO:
+			if (action->action == CREATE_ACCOUNT) {
+				//Delete node in linked list
+				//Pop stack
+			}
+			else if (action->action == DELETE_ACCOUNT) {
+				//Create node in linked list
+				//Pop Stack
+			}
+			else if (action->action == CHANGE_USER) {
+				//search linked list for action->username
+				head->username = action->heldValue;
+				//Pop Stack
+			}
+			else if (action->action == CHANGE_PASSWORD) {
+				//search linked list for action->username
+				head->password = action->heldValue;
+				//Pop stack
+			}
+			else if (action->action == CHANGE_PROFILE) {
+				//Search linked list for action->username
+				head->password = action->heldValue;
+				//Pop stack
+			}
+			break;
+
+		case DELETE_FROM_HIS:
+			//Pop stack w/o enqueue
+			break;
+			
+		case TO_MENU:
+			//Dequeue & Push to stack until queue is empty
+			exit = EXIT;
+		}
 	}
 }
