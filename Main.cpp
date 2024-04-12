@@ -53,8 +53,18 @@ typedef struct Queue {
 	struct QueueNode* back;
 }Queue;
 
+typedef struct LinkedListNode {
+	int action; 
+	char* username;
+	char* password;
+	char* profilePicURL;
+	char* heldValue;
+	struct LinkedListNode* next;
+}LinkedListNode;
+
 typedef struct LinkedList {
-	// This is a test commit for the branch. 
+	struct LinkedListNode* head;
+	struct LinkedListNode* tail;
 }LinkedList;
 
 bool isPasswordValid(char* pass);
