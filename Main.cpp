@@ -32,7 +32,7 @@ typedef struct StackNode {
 	char* password;
 	char* profilePicUrl;
 	char* heldValue;
-	struct Stack* next;
+	struct StackNode* next;
 }StackNode;
 
 typedef struct Stack {
