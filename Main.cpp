@@ -53,19 +53,12 @@ typedef struct Queue {
 	struct QueueNode* back;
 }Queue;
 
-typedef struct LinkedListNode {
-	int action; 
+typedef struct Account {
 	char* username;
 	char* password;
 	char* profilePicURL;
-	char* heldValue;
-	struct LinkedListNode* next;
-}LinkedListNode;
-
-typedef struct LinkedList {
-	struct LinkedListNode* head;
-	struct LinkedListNode* tail;
-}LinkedList;
+	struct Account* next;
+}Account;
 
 bool isPasswordValid(char* pass);
 bool correctPass(Account account, char* pass);
