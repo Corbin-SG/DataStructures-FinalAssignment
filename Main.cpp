@@ -18,6 +18,7 @@
 #define DELETE_HISTORY	8
 #define EXIT			9
 #define MAX_ARRAY_SIZE	101
+#define MAX_QUEUE_SIZE	15
 
 typedef struct Account {
 	char* username;
@@ -45,7 +46,7 @@ typedef struct QueueNode {
 	char* password;
 	char* profilePicURl;
 	char* heldValue;
-	struct Node* next;
+	struct QueueNode* next;
 }QueueNode;
 
 typedef struct Queue {
@@ -66,6 +67,16 @@ void viewAccounts(Account* head);
 void viewHistory(Account* head, Stack* stack, Queue* queue);
 void deleteHistory(Stack* stack);
 
+//Queue
+Queue* InitializeQueue(void);
+bool IsQueueEmpty(Queue* queue);
+bool IsQueueFull(Queue* queue);
+int Front(Queue* queue);
+int Back(Queue* queue);
+int DeQueue(Queue* queue);
+void EnQueue(Queue* queue, int action, char* username, char* password, char* profilePicURL, char* heldValue);
+QueueNode* CreateNewAccount(int action, char* username, char* password, char* profilePicURL, char* heldValue);
+
 int main(void) {
 
 	int exitLoop = 0;
@@ -77,15 +88,10 @@ int main(void) {
 		exit(EXIT);
 	}
 	stack->top = NULL;
-	struct Queue* queue = (Queue*)malloc(sizeof(Queue));
-	if (queue == NULL) {
-		printf("No memory.");
-		exit(EXIT);
-	}
-	queue->front = NULL;
-	queue->back = NULL;
-	
 	struct Account* head = NULL;
+
+	//Queue
+	Queue* queue = InitializeQueue();
 
 	while (exitLoop != EXIT) {
 		printf(" ===YOUR ACCOUNT MANAGER=== \n");
@@ -456,4 +462,119 @@ void deleteHistory(Stack* stack)
 	while (stack != NULL) {
 		//Pop stack
 	}
+}
+
+//Working in Queue
+
+Queue* InitializeQueue(void)
+{
+	Queue* queue = (Queue*)malloc(sizeof(Queue));
+	if (queue == NULL)
+	{
+		printf("No Memory");
+		exit(EXIT);
+	}
+
+	queue->front = NULL;
+	queue->back = NULL;
+	return queue;
+}
+
+bool IsQueueEmpty(Queue* queue)
+{
+	return queue->front == NULL;
+}
+
+bool IsQueueFull(Queue* queue)
+{
+	QueueNode* temp = queue->front;
+	if (temp == NULL)
+	{
+		return false;
+	}
+	for (int counter = 0; temp != queue->back; counter++)
+	{
+		if (counter == MAX_QUEUE_SIZE)
+		{
+			return true;
+		}
+	}
+
+	free(temp);
+	return false;
+}
+
+int Front(Queue* queue)
+{
+	if (IsQueueEmpty(queue))
+	{
+		printf("Queue is Empty");
+		return EXIT;
+	}
+	return queue->front->action;
+}
+
+int Back(Queue* queue)
+{
+	if (IsQueueEmpty(queue))
+	{
+		printf("Queue is Empty");
+		return EXIT;
+	}
+
+	return queue->back->action;
+}
+
+int DeQueue(Queue* queue)
+{
+	if (IsQueueEmpty(queue))
+	{
+		printf("Queue is Empty");
+		return EXIT;
+	}
+
+	QueueNode* nodeToDQueue = queue->front;
+	int dataToDequeue = nodeToDQueue->action;
+	queue->front = nodeToDQueue->next;
+	free(nodeToDQueue);
+	return dataToDequeue;
+}
+
+void EnQueue(Queue* queue, int action, char* username, char* password, char* profilePicURL, char* heldValue)
+{
+	if (queue == NULL)
+	{
+		queue = InitializeQueue();
+	}
+
+	QueueNode* toEnqueue = CreateNewAccount(action, username, password, profilePicURL, heldValue);
+	if (IsQueueEmpty(queue))
+	{
+		queue->front = toEnqueue;
+		queue->back = toEnqueue;
+	}
+	else
+	{
+		queue->back->next = toEnqueue;
+		queue->back = toEnqueue;
+	}
+
+}
+
+QueueNode* CreateNewAccount(int action, char* username, char* password, char* profilePicURL, char* heldValue)
+{
+	QueueNode* newAccount = (QueueNode*)malloc(sizeof(QueueNode));
+	if (newAccount == NULL)
+	{
+		printf("No Memory");
+		exit(EXIT);
+	}
+
+	newAccount->action = action;
+	newAccount->username = username;
+	newAccount->password = password;
+	newAccount->profilePicURl = profilePicURL;
+	newAccount->heldValue = heldValue;
+	newAccount->next = NULL;
+	return newAccount;
 }
