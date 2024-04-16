@@ -65,6 +65,11 @@ struct StackNode* pop(Stack* stack);
 struct Stack* push(Stack* stack, int action, char* user, char* pass, char* pfp, char* held);
 struct StackNode* peek(Stack* stack);
 
+// Account/linked list stuff
+struct Account* insertNode(struct Account* head, char* username, char* password, char* pfpURL);
+struct Account* searchAccountByUser(struct Account* head, char* username);
+void deleteAccountNode(struct Account* head, char* username);
+
 int main(void) {
 
 	int exitLoop = 0;
@@ -393,7 +398,7 @@ int main(void) {
 	return 0;
 }
 
-bool isPasswordValid(char* pass) 
+bool isPasswordValid(char* pass)
 {
 	char nums[11] = "0123456789";
 	char symbols[15] = "!@#$%&*_+=-,.?";
@@ -420,7 +425,7 @@ bool isPasswordValid(char* pass)
 	}
 }
 
-bool correctPass(Account account, char* pass) 
+bool correctPass(Account account, char* pass)
 {
 	if (strcmp(account.password, pass) == 0) {
 		return true;
@@ -447,6 +452,108 @@ char* collectUserInput(void)
 	fgets(userInput, MAX_ARRAY_SIZE, stdin);
 	strcpy(userInput, removeNewLine(userInput));
 	return userInput;
+}
+
+struct Account* insertNode(struct Account* head, char* username, char* password, char* pfpURL)
+{
+	struct Account* newAccount = (struct Account*)malloc(sizeof(struct Account));
+	if (newAccount == NULL) {
+		printf("No Memory!");
+		exit(EXIT);
+	}
+
+	struct Account* currentt = head;
+
+	newAccount->username = (char*)malloc(sizeof(char*));
+	if (newAccount->username == NULL) {
+		printf("No Memory!");
+		exit(EXIT);
+	}
+	newAccount->password = (char*)malloc(sizeof(char*));
+	if (newAccount->password == NULL) {
+		printf("No Memory!");
+		exit(EXIT);
+	}
+	newAccount->profilePicURL = (char*)malloc(sizeof(char*));
+	if (newAccount->profilePicURL == NULL) {
+		printf("No Memory!");
+		exit(EXIT);
+	}
+
+	strcpy(newAccount->username, username);
+	strcpy(newAccount->password, password);
+	strcpy(newAccount->profilePicURL, pfpURL);
+	newAccount->next = NULL;
+
+	if (currentt != NULL) {
+		while (currentt->next != NULL) {
+			currentt = currentt->next;
+		}
+		currentt->next = newAccount;
+		return head;
+	}
+	return newAccount;
+}
+
+struct Account* searchAccountByUser(struct Account* head, char* username)
+{
+	int loop = 0;
+	struct Account* current = head;
+
+	while (current != NULL && loop == 0) {
+		if (strcmp(current->username, username) == 0) {
+			return current;
+		}
+		current = current->next;
+	}
+	return NULL;
+}
+
+void deleteAccountNode(struct Account* head, char* username)
+{
+	struct Account* current = head;
+	struct Account* temp = NULL;
+	int exit = 0;
+
+
+	while (current != NULL) {
+		if (strcmp(current->username, username) == 0) {
+			printf("Deleting Account\n");
+			exit = EXIT;
+
+			if (temp == NULL) {
+				head = current->next;
+				current->next = NULL;
+				strcpy(current->password, "NULL");
+				strcpy(current->profilePicURL, "NULL");
+				strcpy(current->username, "NULL");
+				free(current);
+				return;
+			}
+			else if (current->next == NULL) {
+				temp->next = NULL;
+				strcpy(current->password, "NULL");
+				strcpy(current->profilePicURL, "NULL");
+				strcpy(current->username, "NULL");
+				free(current);
+				return;
+			}
+			else {
+				temp->next = current->next;
+				current->next = NULL;
+				strcpy(current->password, "NULL");
+				strcpy(current->profilePicURL, "NULL");
+				strcpy(current->username, "NULL");
+				free(current);
+				return;
+			}
+		}
+		temp = current;
+		current = current->next;
+	}
+
+	printf("No account with username %s found.\n", username);
+	return;
 }
 
 struct StackNode* pop(Stack* stack)
