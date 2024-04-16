@@ -60,10 +60,10 @@ bool isPasswordValid(char* pass);
 bool correctPass(Account account, char* pass);
 char* removeNewLine(char* userInput);
 char* collectUserInput(void);
+
 struct StackNode* pop(Stack* stack);
 struct Stack* push(Stack* stack, int action, char* user, char* pass, char* pfp, char* held);
 struct StackNode* peek(Stack* stack);
-
 
 int main(void) {
 
