@@ -2,6 +2,8 @@
 #include <string.h>
 #include <stdlib.h>
 
+#pragma warning(disable: 4996)
+
 #define CREATE_ACCOUNT	1
 #define MOVE_BACK		1
 #define DELETE_ACCOUNT	2
@@ -18,6 +20,7 @@
 #define DELETE_HISTORY	8
 #define EXIT			9
 #define MAX_ARRAY_SIZE	101
+#define MAX_QUEUE_SIZE	15
 
 typedef struct Account {
 	char* username;
@@ -32,7 +35,7 @@ typedef struct StackNode {
 	char* password;
 	char* profilePicUrl;
 	char* heldValue;
-	struct Stack* next;
+	struct StackNode* next;
 }StackNode;
 
 typedef struct Stack {
@@ -57,14 +60,10 @@ bool isPasswordValid(char* pass);
 bool correctPass(Account account, char* pass);
 char* removeNewLine(char* userInput);
 char* collectUserInput(void);
-void createAccount(Stack* stack, Account* head);
-void deleteAccount(Stack* stack, Account* head);
-void changeUserName(Account* head, Stack* stack);
-void changePassword(Account* head, Stack* stack);
-void changeProfilePicture(Account* head, Stack* stack);
-void viewAccounts(Account* head);
-void viewHistory(Account* head, Stack* stack, Queue* queue);
-void deleteHistory(Stack* stack);
+
+struct StackNode* pop(Stack* stack);
+struct Stack* push(Stack* stack, int action, char* user, char* pass, char* pfp, char* held);
+struct StackNode* peek(Stack* stack);
 
 // Account/linked list stuff
 struct Account* insertNode(struct Account* head, char* username, char* password, char* pfpURL);
@@ -555,4 +554,69 @@ void deleteAccountNode(struct Account* head, char* username)
 
 	printf("No account with username %s found.\n", username);
 	return;
+}
+
+struct StackNode* pop(Stack* stack)
+{
+	if (stack->top == NULL) {
+		printf("Stack Empty.\n");
+		return NULL;
+	}
+	struct StackNode* temp = stack->top;
+	stack->top = stack->top->next;
+	strcpy(temp->heldValue, "NULL");
+	strcpy(temp->password, "NULL");
+	strcpy(temp->username, "NULL");
+	strcpy(temp->profilePicUrl, "NULL");
+	free(temp);
+	return stack->top;
+}
+
+struct Stack* push(Stack* stack, int action, char* user, char* pass, char* pfp, char* held)
+{
+	StackNode* newNode = (StackNode*)malloc(sizeof(StackNode));
+	if (newNode == NULL) {
+		printf("Out of memory.\n");
+		exit(EXIT);
+	}
+
+	newNode->username = (char*)malloc(sizeof(char));
+	if (newNode->username == NULL) {
+		printf("Out of memory.\n");
+		exit(EXIT);
+	}
+	newNode->password = (char*)malloc(sizeof(char));
+	if (newNode->password == NULL) {
+		printf("Out of memory.\n");
+		exit(EXIT);
+	}
+	newNode->profilePicUrl = (char*)malloc(sizeof(char));
+	if (newNode->profilePicUrl == NULL) {
+		printf("Out of memory.\n");
+		exit(EXIT);
+	}
+	newNode->heldValue = (char*)malloc(sizeof(char));
+	if (newNode->heldValue == NULL) {
+		printf("Out of memory.\n");
+		exit(EXIT);
+	}
+	newNode->action = action;
+	strcpy(newNode->username, user);
+	strcpy(newNode->password, pass);
+	strcpy(newNode->profilePicUrl, pfp);
+	if (held != NULL) {
+		strcpy(newNode->heldValue, held);
+	}
+	newNode->next = stack->top;
+	stack->top = newNode;
+	return stack;
+}
+
+struct StackNode* peek(Stack* stack)
+{
+	if (stack->top == NULL) {
+		printf("Stack Empty.\n");
+		return NULL;
+	}
+	return stack->top;
 }
