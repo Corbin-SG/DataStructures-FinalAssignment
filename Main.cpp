@@ -401,6 +401,8 @@ int main(void) {
 		}
 	}
 
+	free(queue);
+	free(stack);
 	return 0;
 }
 
