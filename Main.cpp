@@ -328,7 +328,7 @@ int main(void) {
 				fgets(userInput, MAX_ARRAY_SIZE, stdin);
 				strcpy(userInput, removeNewLine(userInput));
 				userNum = atoi(userInput);
-				if (userNum < 1 || userNum > 4) {
+				if (userNum < 1 || userNum > 5) {
 					printf("Invalid input\n");
 					continue;
 				}
