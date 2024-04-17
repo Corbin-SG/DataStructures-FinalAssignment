@@ -48,7 +48,7 @@ typedef struct QueueNode {
 	char* password;
 	char* profilePicURl;
 	char* heldValue;
-	struct Node* next;
+	struct QueueNode* next;
 }QueueNode;
 
 typedef struct Queue {
@@ -65,10 +65,16 @@ struct StackNode* pop(Stack* stack);
 struct Stack* push(Stack* stack, int action, char* user, char* pass, char* pfp, char* held);
 struct StackNode* peek(Stack* stack);
 
-// Account/linked list stuff
 struct Account* insertNode(struct Account* head, char* username, char* password, char* pfpURL);
 struct Account* searchAccountByUser(struct Account* head, char* username);
 void deleteAccountNode(struct Account* head, char* username);
+
+QueueQueue* InitializeQueue(void);
+bool IsQueueEmpty(Queue* queue);
+bool IsQueueFull(Queue* queue);
+int DeQueue(Queue* queue);
+void EnQueue(Queue* queue, int action, char* username, char* password, char* profilePicURL, char* heldValue);
+QueueNode* CreateNewAccount(int action, char* username, char* password, char* profilePicURL, char* heldValue);
 
 int main(void) {
 
@@ -88,9 +94,9 @@ int main(void) {
 	}
 	stack->top = NULL;
 	struct StackNode* action = stack->top;
-	//struct Queue* queue = InitializeQueue();
-
-	struct Account* head = NULL;
+	struct Queue* queue = InitializeQueue();
+  
+  struct Account* head = NULL;
 
 	while (exitLoop != EXIT) {
 		printf(" ===YOUR ACCOUNT MANAGER=== \n");
@@ -119,7 +125,7 @@ int main(void) {
 				printf("Enter a Username: ");
 				fgets(userName, MAX_ARRAY_SIZE, stdin);
 				strcpy(userName, removeNewLine(userName));
-				//current = searchAccountByUser(head, userName);
+				current = searchAccountByUser(head, userName);
 				if (current != NULL) {
 					printf("Account with username %s already exists. \n", userName);
 					continue;
@@ -137,8 +143,8 @@ int main(void) {
 				strcpy(profileURL, removeNewLine(profileURL));
 				loop = EXIT;
 			}
-			//head = insertNode(head, userName, pass, profileURL);
-			//push(stack, CREATE_ACCOUNT, userName, pass, profileURL, NULL);
+			head = insertNode(head, userName, pass, profileURL);
+			push(stack, CREATE_ACCOUNT, userName, pass, profileURL, NULL);
 			break;
 
 		case DELETE_ACCOUNT:
@@ -151,7 +157,7 @@ int main(void) {
 				printf("Enter the Username of the Account to be Deleted: ");
 				fgets(userName, MAX_ARRAY_SIZE, stdin);
 				strcpy(userName, removeNewLine(userName));
-				//current = searchAccountByUser(head, userName);
+				current = searchAccountByUser(head, userName);
 				if (current == NULL) {
 					printf("No account with username %s found. \n", userName);
 					continue;
@@ -166,8 +172,8 @@ int main(void) {
 				loop = EXIT;
 			}
 
-			//push(stack, DELETE_ACCOUNT, current->username, current->password, current->profilePicURL, NULL);
-			//deleteAccountNode(head, userName);
+			push(stack, DELETE_ACCOUNT, current->username, current->password, current->profilePicURL, NULL);
+			deleteAccountNode(head, userName);
 			break;
 
 		case CHANGE_USER:
@@ -176,7 +182,7 @@ int main(void) {
 				printf("Enter Username of Account to be Edited: ");
 				fgets(userName, MAX_ARRAY_SIZE, stdin);
 				strcpy(userName, removeNewLine(userName));
-				//current = searchAccountByUser(head, userName);
+				current = searchAccountByUser(head, userName);
 				if (current == NULL) {
 					printf("No account with username %s found. \n", userName);
 					continue;
@@ -194,7 +200,7 @@ int main(void) {
 			printf("Enter new Username: ");
 			fgets(userName, MAX_ARRAY_SIZE, stdin);
 			strcpy(userName, removeNewLine(userName));
-			//push(stack, CHANGE_USER, userName, current->password, current->profilePicURL, current->username);
+			push(stack, CHANGE_USER, userName, current->password, current->profilePicURL, current->username);
 			strcpy(current->username, userName);
 			break;
 
@@ -204,7 +210,7 @@ int main(void) {
 				printf("Enter Username of Account to be Edited: ");
 				fgets(userName, MAX_ARRAY_SIZE, stdin);
 				strcpy(userName, removeNewLine(userName));
-				//current = searchAccountByUser(head, userName);
+				current = searchAccountByUser(head, userName);
 				if (current == NULL) {
 					printf("No account with username %s found. \n", userName);
 					continue;
@@ -222,7 +228,7 @@ int main(void) {
 			printf("Enter new Password: ");
 			fgets(pass, MAX_ARRAY_SIZE, stdin);
 			strcpy(pass, removeNewLine(pass));
-			//push(stack, CHANGE_PASSWORD, current->username, pass, current->profilePicURL, current->password);
+			push(stack, CHANGE_PASSWORD, current->username, pass, current->profilePicURL, current->password);
 			strcpy(current->password, pass);
 			break;
 
@@ -232,7 +238,7 @@ int main(void) {
 				printf("Enter Username of Account to be Edited: ");
 				fgets(userName, MAX_ARRAY_SIZE, stdin);
 				strcpy(userName, removeNewLine(userName));
-				//current = searchAccountByUser(head, userName);
+				current = searchAccountByUser(head, userName);
 				if (current == NULL) {
 					printf("No account with username %s found. \n", userName);
 					continue;
@@ -250,7 +256,7 @@ int main(void) {
 			printf("Enter new Profile Picture URL: ");
 			fgets(profileURL, MAX_ARRAY_SIZE, stdin);
 			strcpy(profileURL, removeNewLine(profileURL));
-			//push(stack, CHANGE_PROFILE, current->username, current->password, profileURL, current->profilePicURL);
+			push(stack, CHANGE_PROFILE, current->username, current->password, profileURL, current->profilePicURL);
 			strcpy(head->profilePicURL, profileURL);
 			break;
 
@@ -273,7 +279,7 @@ int main(void) {
 			while (loop == 0) {
 
 				if (stack->top != NULL) {
-					//action = peek(stack);
+					action = peek(stack);
 					printf("====HISTORY====\n");
 
 					switch (action->action) {
@@ -329,63 +335,63 @@ int main(void) {
 
 				switch (userNum) {
 				case MOVE_BACK:
-					//EnQueue(queue, action->action, action->username, action->password, action->profilePicUrl, action->heldValue);
-					//stack->top = pop(stack);
+					EnQueue(queue, action->action, action->username, action->password, action->profilePicUrl, action->heldValue);
+					stack->top = pop(stack);
 					break;
 
 				case MOVE_FORWARD:
-					/*if (queue->front == NULL) {
+					if (queue->front == NULL) {
 						printf("No action in forward history.");
 					}
 					else {
 						push(stack, queue->front->action, queue->front->username, queue->front->password, queue->front->profilePicURl, queue->front->heldValue);
 						DeQueue(queue);
-					}*/
+					}
 					break;
 				case UNDO:
 					if (action->action == CREATE_ACCOUNT) {
-						//deleteAccountNode(head, action->username);
-						//pop(stack);
+						deleteAccountNode(head, action->username);
+						pop(stack);
 					}
 					else if (action->action == DELETE_ACCOUNT) {
-						//insertNode(head, action->username, action->password, action->profilePicUrl);
-						//pop(stack);
+						insertNode(head, action->username, action->password, action->profilePicUrl);
+						pop(stack);
 					}
 					else if (action->action == CHANGE_USER) {
-						//current = searchAccountByUser(head, action->username);
+						current = searchAccountByUser(head, action->username);
 						strcpy(current->username, action->heldValue);
-						//pop(stack);
+						pop(stack);
 					}
 					else if (action->action == CHANGE_PASSWORD) {
-						//current = searchAccountByUser(head, action->username);
+						current = searchAccountByUser(head, action->username);
 						strcpy(current->password, action->heldValue);
-						//pop(stack);
+						pop(stack);
 					}
 					else if (action->action == CHANGE_PROFILE) {
-						//current = searchAccountByUser(head, action->username);
+						current = searchAccountByUser(head, action->username);
 						strcpy(current->profilePicURL, action->heldValue);
-						//pop(stack);
+						pop(stack);
 					}
 					break;
 
 				case DELETE_FROM_HIS:
-					//pop(stack);
+					pop(stack);
 					break;
 
 				case TO_MENU:
-					/*while (queue->front != NULL) {
+					while (queue->front != NULL) {
 						push(stack, queue->front->action, queue->front->username, queue->front->password, queue->front->profilePicURl, queue->front->heldValue);
 						DeQueue(queue);
 					}
 					loop = EXIT;
-					break;*/
+					break;
 				}
 			}
 			break;
 
 		case DELETE_HISTORY:
 			while (stack != NULL) {
-				//pop(stack);
+				pop(stack);
 			}
 			break;
 
@@ -612,11 +618,129 @@ struct Stack* push(Stack* stack, int action, char* user, char* pass, char* pfp, 
 	return stack;
 }
 
-struct StackNode* peek(Stack* stack)
+struct StackNode* peek(Stack* stack) 
 {
 	if (stack->top == NULL) {
 		printf("Stack Empty.\n");
 		return NULL;
 	}
 	return stack->top;
+}
+
+Queue* InitializeQueue(void)
+{
+	Queue* queue = (Queue*)malloc(sizeof(Queue));
+	if (queue == NULL)
+	{
+		printf("No Memory");
+		exit(EXIT);
+	}
+
+	queue->front = NULL;
+	queue->back = NULL;
+	return queue;
+}
+
+bool IsQueueEmpty(Queue* queue)
+{
+	return queue->front == NULL;
+}
+
+bool IsQueueFull(Queue* queue)
+{
+	QueueNode* temp = queue->front;
+	if (temp == NULL)
+	{
+		return false;
+	}
+	for (int counter = 0; temp != queue->back; counter++)
+	{
+		if (counter == MAX_QUEUE_SIZE)
+		{
+			return true;
+		}
+	}
+
+	free(temp);
+	return false;
+}
+
+int DeQueue(Queue* queue)
+{
+	if (IsQueueEmpty(queue))
+	{
+		printf("Queue is Empty");
+		return EXIT;
+	}
+
+	QueueNode* nodeToDQueue = queue->front;
+	int dataToDequeue = nodeToDQueue->action;
+	queue->front = nodeToDQueue->next;
+	free(nodeToDQueue);
+	return dataToDequeue;
+}
+
+void EnQueue(Queue* queue, int action, char* username, char* password, char* profilePicURL, char* heldValue)
+{
+	if (queue == NULL)
+	{
+		queue = InitializeQueue();
+	}
+
+	QueueNode* toEnqueue = CreateNewAccount(action, username, password, profilePicURL, heldValue);
+	if (IsQueueEmpty(queue))
+	{
+		queue->front = toEnqueue;
+		queue->back = toEnqueue;
+	}
+	else
+	{
+		queue->back->next = toEnqueue;
+		queue->back = toEnqueue;
+	}
+  
+}
+
+QueueNode* CreateNewAccount(int action, char* username, char* password, char* profilePicURL, char* heldValue)
+{
+	QueueNode* newAccount = (QueueNode*)malloc(sizeof(QueueNode));
+if (newAccount == NULL)
+{
+	printf("No Memory");
+	exit(EXIT);
+}
+newAccount->username = (char*)malloc(sizeof(char));
+if (newAccount->username == NULL)
+{
+	printf("No Memory");
+	exit(EXIT);
+}
+newAccount->password = (char*)malloc(sizeof(char));
+if (newAccount->password == NULL)
+{
+	printf("No Memory");
+	exit(EXIT);
+}
+newAccount->profilePicURl = (char*)malloc(sizeof(char));
+if (newAccount->profilePicURl == NULL)
+{
+	printf("No Memory");
+	exit(EXIT);
+}
+newAccount->heldValue = (char*)malloc(sizeof(char));
+if (newAccount->heldValue == NULL)
+{
+	printf("No Memory");
+	exit(EXIT);
+}
+
+newAccount->action = action;
+strcpy(newAccount->username, username);
+strcpy(newAccount->password, password);
+strcpy(newAccount->profilePicURl, profilePicURL);
+if (heldValue != NULL) {
+	strcpy(newAccount->heldValue, heldValue);
+}
+newAccount->next = NULL;
+return newAccount;
 }
