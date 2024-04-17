@@ -69,7 +69,7 @@ struct Account* insertNode(struct Account* head, char* username, char* password,
 struct Account* searchAccountByUser(struct Account* head, char* username);
 void deleteAccountNode(struct Account* head, char* username);
 
-QueueQueue* InitializeQueue(void);
+struct Queue* InitializeQueue(void);
 bool IsQueueEmpty(Queue* queue);
 bool IsQueueFull(Queue* queue);
 int DeQueue(Queue* queue);
@@ -390,7 +390,7 @@ int main(void) {
 			break;
 
 		case DELETE_HISTORY:
-			while (stack != NULL) {
+			while (stack->top != NULL) {
 				pop(stack);
 			}
 			break;
